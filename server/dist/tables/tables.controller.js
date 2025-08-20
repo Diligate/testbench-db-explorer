@@ -41,6 +41,12 @@ let TablesController = class TablesController {
     getOneByName(name) {
         return this.tablesService.getOneByName(name);
     }
+    getGraph() {
+        return this.tablesService.getGraph();
+    }
+    validateKeys() {
+        return this.tablesService.validateKeys();
+    }
     getOne(id) {
         return this.tablesService.getOne(id);
     }
@@ -102,6 +108,18 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], TablesController.prototype, "getOneByName", null);
+__decorate([
+    (0, common_1.Get)("graph/view"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TablesController.prototype, "getGraph", null);
+__decorate([
+    (0, common_1.Get)("graph/validate"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TablesController.prototype, "validateKeys", null);
 __decorate([
     (0, common_1.Get)(":id"),
     __param(0, (0, common_1.Param)("id", new common_1.ParseIntPipe({ errorHttpStatusCode: common_1.HttpStatus.NOT_FOUND }))),

@@ -8,6 +8,7 @@ import Profile from "./pages/admin/profile";
 import Settings from "./pages/admin/settings";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import TableDetail from "./pages/client/tableDetail";
+import TotalGraphView from "./pages/client/totalGraphView";
 import Page404 from "./pages/page404";
 import EditTable from "./pages/admin/editTable.";
 import EditAddUsers from "./pages/admin/editAddUsers";
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/graph" element={<TotalGraphView />} />
           <Route path="/table/:name" element={<TableDetail />} />
           <Route path="/login" element={<Login />} />
           <Route element={<PrivateRoutes />}>

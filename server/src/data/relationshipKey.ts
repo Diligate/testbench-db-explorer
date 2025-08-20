@@ -1,4 +1,4 @@
-var RelationshipKey = {
+let RelationshipKey = {
   TestProjectBean: {
     name: ["projectPK", "projPK", "value_projectPK", "project"],
     tableName: "TestProjectBean",

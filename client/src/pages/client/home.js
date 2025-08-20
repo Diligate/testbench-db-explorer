@@ -54,6 +54,11 @@ export default function Home() {
             TestBench-VS
           </h2>
         </Link>
+        <div className="absolute right-6 top-6 z-20">
+          <Link to="/graph" className="text-white underline">
+            View total graph
+          </Link>
+        </div>
       </div>
       <div className="w-full absolute top-1/4 -mt-5 lg:w-4/5 h-full flex flex-col justify-start items-center ">
         <div className="flex justify-center  items-center flex-wrap gap-10 lg:gap-x-28 lg:w-3/5 my-5 w-4/5 pb-4 ">

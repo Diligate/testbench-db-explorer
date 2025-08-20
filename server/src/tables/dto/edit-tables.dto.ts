@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class EditTablesDto {
   @IsString()
@@ -12,5 +12,4 @@ export class EditTablesDto {
   @IsNumber()
   @IsOptional()
   numForeignKey?: number;
-
 }

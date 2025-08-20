@@ -18,7 +18,7 @@ let PrismaService2 = class PrismaService2 extends client2_1.PrismaClient {
         super({
             datasources: {
                 db: {
-                    url: config.get('DATABASE_URL2'),
+                    url: config.get("DATABASE_URL2"),
                 },
             },
         });

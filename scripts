@@ -1,0 +1,19 @@
+Docker running guide :
+docker build -t postgres_image .
+docker run -d --name postgress -p 5432:5432 postgres_image
+
+NB : if the port is used :
+		sudo lsof -i :5432
+		sudo kill -9 <PID>
+
+or use :
+		docker ps -a 
+		docker stop/rm docker_id
+		
+
+Prisma Generation and run the project 
+npx prisma generate --schema prisma/schema.prisma
+npx prisma db pull --schema prisma/schemaTestbench.prisma
+npx prisma generate --schema prisma/schemaTestbench.prisma
+npx prisma db push
+npm run start:dev

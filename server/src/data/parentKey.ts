@@ -1,4 +1,4 @@
-var ParentKey = {
+let ParentKey = {
   SubdivisionBean: {
     name: ["DataTypeBean", "ConditionBean", "MetawordBean", "SubdivisionBean"],
     tableName: "SubdivisionBean",

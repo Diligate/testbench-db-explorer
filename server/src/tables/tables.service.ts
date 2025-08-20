@@ -258,7 +258,7 @@ export class TablesService {
   }
 
   async importDbTable(data: any) {
-    let all = [];
+    const all = [];
     console.log(data.length);
     for (let i = 0; i < data.length; i++) {
       const table = await this.prisma.table.create({
@@ -274,5 +274,101 @@ export class TablesService {
     }
 
     return all;
+  }
+
+  async getGraph() {
+    const tables = await this.prisma.table.findMany();
+    const attributes = await this.prisma.attribute.findMany();
+
+    const deriveContext = (tableName: string) => {
+      const name = tableName.toLowerCase();
+      if (
+        name.includes("test") ||
+        name.includes("exec") ||
+        name.includes("cycle") ||
+        name.includes("spec")
+      )
+        return "Testing";
+      if (name.includes("requirement")) return "Requirements";
+      if (name.includes("user") || name.includes("tester")) return "Users";
+      if (name.includes("meta") || name.includes("metaword")) return "Meta";
+      if (name.includes("file") || name.includes("attach")) return "Files";
+      if (name.includes("datatype")) return "DataTypes";
+      if (name.includes("plugin") || name.includes("pref")) return "Config";
+      return "Other";
+    };
+
+    const nodes = tables.map((t) => {
+      const pkColumns = attributes
+        .filter((a) => a.tableId === t.id && a.pKey)
+        .map((a) => a.name);
+      return {
+        id: t.name,
+        name: t.name,
+        group: deriveContext(t.name),
+        pkColumns,
+        rowCount: t.rowCount,
+        fkCount: t.numForeignKey,
+      };
+    });
+
+    const links = attributes
+      .filter((a) => a.fTable)
+      .map((a) => ({
+        source: a.tableName,
+        target: a.fTable,
+        fkColumn: a.name,
+        pkColumn: a.pColumn || null,
+        constraint: a.indexName || null,
+      }));
+
+    return { nodes, links };
+  }
+
+  async validateKeys() {
+    const tables = await this.prisma.table.findMany();
+    const attributes = await this.prisma.attribute.findMany();
+
+    const byTable = new Map<string, { pk: string[]; fk: number }>();
+    tables.forEach((t) => byTable.set(t.name, { pk: [], fk: 0 }));
+    attributes.forEach((a) => {
+      const t = byTable.get(a.tableName);
+      if (!t) return;
+      if (a.pKey) t.pk.push(a.name);
+      if (a.fTable) t.fk += 1;
+    });
+
+    const issues: Array<{
+      table: string;
+      type: string;
+      detail: string;
+    }> = [];
+
+    byTable.forEach((v, k) => {
+      if (v.pk.length === 0) {
+        issues.push({ table: k, type: "NO_PRIMARY_KEY", detail: "Table has no primary key" });
+      }
+      if (v.pk.length > 1) {
+        issues.push({
+          table: k,
+          type: "COMPOSITE_PRIMARY_KEY",
+          detail: `Table has composite primary key columns: ${v.pk.join(", ")}`,
+        });
+      }
+    });
+
+    return {
+      summary: Array.from(byTable.entries()).map(([table, { pk, fk }]) => ({
+        table,
+        primaryKeyColumns: pk,
+        foreignKeyCount: fk,
+      })),
+      issues,
+      rules: {
+        primaryKey: "Prefer a single-column primary key. Composite keys are allowed for join/association tables only.",
+        foreignKeys:
+          "Foreign keys should reference a single parent table per column. Avoid nullable FKs unless required by the domain.",
+      },
+    };
   }
 }

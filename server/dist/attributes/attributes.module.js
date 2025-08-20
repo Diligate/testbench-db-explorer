@@ -15,7 +15,7 @@ let AttributesModule = class AttributesModule {
 AttributesModule = __decorate([
     (0, common_1.Module)({
         controllers: [attributes_controller_1.AttributesController],
-        providers: [attributes_service_1.AttributesService]
+        providers: [attributes_service_1.AttributesService],
     })
 ], AttributesModule);
 exports.AttributesModule = AttributesModule;

@@ -15,7 +15,7 @@ let TablesModule = class TablesModule {
 TablesModule = __decorate([
     (0, common_1.Module)({
         controllers: [tables_controller_1.TablesController],
-        providers: [tables_service_1.TablesService]
+        providers: [tables_service_1.TablesService],
     })
 ], TablesModule);
 exports.TablesModule = TablesModule;

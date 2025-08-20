@@ -25,8 +25,7 @@ export default function InputFileJSON({
         className="px-6 py-3 ml-3 font-semibold capitalize rounded-md bg-orange-400 text-neutral-100  hover:bg-orange-500 h-12"
         onClick={(e) => {
           handleOnSubmit(e);
-          e.files.value = null;
-          inputRef.current.value = "null";
+          inputRef.current.value = "";
         }}
       >
         {text}

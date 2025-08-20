@@ -11,6 +11,7 @@ import InputRow from "./inputRow";
 import RelationsFk from "./relationsFk";
 import RelationsPk from "./relationsPk";
 import Result from "./result";
+import ForceGraph2D from "react-force-graph-2d";
 
 export default function TableDetail() {
   let navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function TableDetail() {
   const [rowsDB, setRowsDB] = useState({});
   const [showDetail, setShowDetail] = useState(true);
   const [relationsP, setRelationsP] = useState([]);
+  const [localGraph, setLocalGraph] = useState({ nodes: [], links: [] });
 
   useEffect(() => {
     fetch("http://localhost:5500/tables/one/" + name)
@@ -35,6 +37,22 @@ export default function TableDetail() {
           .then((res) => res.json())
           .then((data) => {
             setRelationsP(data);
+          });
+        fetch("http://localhost:5500/tables/graph/view")
+          .then((res) => res.json())
+          .then((g) => {
+            const node = g.nodes.find((n) => n.name === name);
+            if (!node) return;
+            const neighbors = new Set([node.id]);
+            g.links.forEach((l) => {
+              if (l.source === node.id) neighbors.add(l.target);
+              if (l.target === node.id) neighbors.add(l.source);
+            });
+            const nodes = g.nodes.filter((n) => neighbors.has(n.id));
+            const links = g.links.filter(
+              (l) => neighbors.has(l.source) && neighbors.has(l.target)
+            );
+            setLocalGraph({ nodes, links });
           });
       })
       .catch(() => {
@@ -163,6 +181,48 @@ export default function TableDetail() {
           <span className="inline-block w-40 h-1 bg-orange-400 rounded-full"></span>
           <span className="inline-block w-3 h-1 mx-1 bg-orange-400 rounded-full"></span>
           <span className="inline-block w-1 h-1 bg-orange-400 rounded-full"></span>
+        </div>
+        <div className="w-full h-80 px-4 lg:px-20 mb-4">
+          <div className="bg-white rounded shadow p-2 h-full">
+            <div className="text-sm font-semibold mb-1">Relationships around this table</div>
+            <ForceGraph2D
+              graphData={localGraph}
+              nodeId="id"
+              height={300}
+              nodeLabel={(n) => `${n.name}\nPKs: ${n.pkColumns?.join(", ") || "(none)"}`}
+              linkDirectionalArrowLength={6}
+              linkDirectionalArrowRelPos={1}
+              linkLabel={(l) => `${l.fkColumn} -> ${l.target}${l.pkColumn ? ` (PK: ${l.pkColumn})` : ""}`}
+              nodeAutoColorBy="group"
+              onNodeClick={(node) => navigate(`/table/${node.name}`)}
+              nodeCanvasObject={(node, ctx, globalScale) => {
+                const label = node.name;
+                const fontSize = 12 / Math.max(0.5, globalScale);
+                ctx.font = `${fontSize}px Sans-Serif`;
+                const textWidth = ctx.measureText(label).width;
+                const bckgDimensions = [textWidth + 8, fontSize + 4];
+                ctx.fillStyle = node.color || "#fff";
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 4, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#333";
+                ctx.stroke();
+                ctx.fillStyle = "rgba(255,255,255,0.9)";
+                ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - 12 - bckgDimensions[1] / 2, ...bckgDimensions);
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#111";
+                ctx.fillText(label, node.x, node.y - 12);
+                node.__bckgDimensions = bckgDimensions;
+              }}
+              nodePointerAreaPaint={(node, color, ctx) => {
+                const bckgDimensions = node.__bckgDimensions || [0, 0];
+                ctx.fillStyle = color;
+                ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - 12 - bckgDimensions[1] / 2, ...bckgDimensions);
+              }}
+            />
+          </div>
         </div>
         <div className="flex justify-center items-center mx-auto mb-5 ">
           <h3 className="px-6 text-xl  italic">Meta data</h3>

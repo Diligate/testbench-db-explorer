@@ -59,6 +59,16 @@ export class TablesController {
   ) {
     return this.tablesService.getOneByName(name);
   }
+
+  @Get("graph/view")
+  getGraph() {
+    return this.tablesService.getGraph();
+  }
+
+  @Get("graph/validate")
+  validateKeys() {
+    return this.tablesService.validateKeys();
+  }
   @Get(":id")
   getOne(
     @Param(

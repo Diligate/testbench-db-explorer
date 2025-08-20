@@ -1,0 +1,30 @@
+{
+    "SubdivisionBean": {
+        "name": [
+            "DataTypeBean",
+            "ConditionBean",
+            "MetawordBean",
+            "SubdivisionBean"
+        ],
+        "parent": "SubdivisionBean"
+    },
+    "TestThemeBean": {
+        "name": [
+            "TestThemeBean",
+            "TestCaseBean"
+        ],
+        "parent": "TestThemeBean"
+    },
+    "SpecInformationBean": {
+        "name": [
+            "SpecParamCombValueBean"
+        ],
+        "parent": "SpecInformationBean"
+    },
+    "ExecInformationBean": {
+        "name": [
+            "ExecParamCombValueBean"
+        ],
+        "parent": "ExecParameterCombinationBean"
+    }
+}
