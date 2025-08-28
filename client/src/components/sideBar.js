@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
 import avatarImg from "../assets/images/avatar.png";
 import logo from "../assets/images/logo.png";
+
 export default function SideBar() {
   return (
-    <div className="hidden md:flex md:flex-shrink-0 ">
+    <div className="hidden md:flex md:flex-shrink-0">
       <div className="flex flex-col w-64">
         <div className="flex flex-col flex-grow pt-5 overflow-y-auto border-r bg-[#009688]">
+          {/* Logo Section */}
           <div className="flex flex-col items-center justify-center flex-shrink-0 px-4">
             <NavLink
               to="/app/dashboard"
@@ -16,31 +18,20 @@ export default function SideBar() {
                 TestBench-VS
               </h2>
             </NavLink>
-            <button className="hidden rounded-lg focus:outline-none focus:shadow-outline">
-              <svg fill="currentColor" viewBox="0 0 20 20" className="w-6 h-6">
-                <path
-                  fillRule="evenodd"
-                  d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"
-                  clipRule="evenodd"
-                />
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
           </div>
+
+          {/* Navigation Links */}
           <div className="flex flex-col flex-grow px-4 mt-5">
             <nav className="flex-1 space-y-1 bg-[#009688]">
               <ul>
+                {/* Dashboard */}
                 <li>
                   <NavLink
                     to="/app/dashboard"
                     className={({ isActive }) =>
                       isActive
-                        ? "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform border rounded-lg text-white bg-orange-400 border-orange-100  focus:shadow-outline"
-                        : "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform  rounded-lg text-white  focus:shadow-outline hover:bg-orange-400"
+                        ? "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform border rounded-lg text-white bg-orange-400 border-orange-100 focus:shadow-outline"
+                        : "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-white focus:shadow-outline hover:bg-orange-400"
                     }
                   >
                     <svg
@@ -63,16 +54,46 @@ export default function SideBar() {
                         d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
                       />
                     </svg>
-                    <span className="ml-4"> Dashboard</span>
+                    <span className="ml-4">Dashboard</span>
                   </NavLink>
                 </li>
+
+                {/* Home */}
+                <li>
+                  <NavLink
+                    to="http://localhost:3000/home"
+                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-white focus:shadow-outline hover:bg-orange-400"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = "http://localhost:3000/home";
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6m-6 0H7m6 0v6m0 6h6m-6 0H7"
+                      />
+                    </svg>
+                    <span className="ml-4">Home</span>
+                  </NavLink>
+                </li>
+
+                {/* Tables */}
                 <li>
                   <NavLink
                     to="/app/tables"
                     className={({ isActive }) =>
                       isActive
-                        ? "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform border rounded-lg text-white bg-orange-400 border-orange-100  focus:shadow-outline"
-                        : "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform  rounded-lg text-white  focus:shadow-outline hover:bg-orange-400"
+                        ? "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform border rounded-lg text-white bg-orange-400 border-orange-100 focus:shadow-outline"
+                        : "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-white focus:shadow-outline hover:bg-orange-400"
                     }
                   >
                     <svg
@@ -89,16 +110,18 @@ export default function SideBar() {
                         d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                       />
                     </svg>
-                    <span className="ml-4"> Tables</span>
+                    <span className="ml-4">Tables</span>
                   </NavLink>
                 </li>
+
+                {/* Users */}
                 <li>
                   <NavLink
                     to="/app/users"
                     className={({ isActive }) =>
                       isActive
-                        ? "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform border rounded-lg text-white bg-orange-400 border-orange-100  focus:shadow-outline"
-                        : "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform  rounded-lg text-white  focus:shadow-outline hover:bg-orange-400"
+                        ? "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform border rounded-lg text-white bg-orange-400 border-orange-100 focus:shadow-outline"
+                        : "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-white focus:shadow-outline hover:bg-orange-400"
                     }
                   >
                     <svg
@@ -119,13 +142,14 @@ export default function SideBar() {
                   </NavLink>
                 </li>
 
+                {/* Settings */}
                 <li>
                   <NavLink
                     to="/app/settings"
                     className={({ isActive }) =>
                       isActive
-                        ? "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform border rounded-lg text-white bg-orange-400 border-orange-100  focus:shadow-outline"
-                        : "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform  rounded-lg text-white  focus:shadow-outline hover:bg-orange-400"
+                        ? "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform border rounded-lg text-white bg-orange-400 border-orange-100 focus:shadow-outline"
+                        : "inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-white focus:shadow-outline hover:bg-orange-400"
                     }
                   >
                     <svg
@@ -154,6 +178,8 @@ export default function SideBar() {
               </ul>
             </nav>
           </div>
+
+          {/* Profile Section */}
           <div className="flex flex-shrink-0 p-4 px-4 bg-orange-400 border-t border-orange-500">
             <NavLink
               to="/app/profile"
@@ -168,7 +194,7 @@ export default function SideBar() {
                   />
                 </div>
                 <div className="ml-3">
-                  <p className="text-base  font-normal text-white capitalize">
+                  <p className="text-base font-normal text-white capitalize">
                     {`${localStorage.getItem(
                       "lastName"
                     )} ${localStorage.getItem("firstName")}`}

@@ -46,7 +46,7 @@ export default function Tables() {
                     columns={[
                       "Name",
                       "total rows",
-                      "total foreign key",
+                      "number of foreign keys",
                       "description",
                       "action",
                     ]}

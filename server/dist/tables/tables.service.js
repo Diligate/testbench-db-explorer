@@ -78,29 +78,36 @@ let TablesService = class TablesService {
         return table;
     }
     async refresh() {
-        const tables = await this.prisma2.$queryRaw `
-      SELECT TABLE_NAME ,
-        (SELECT  CAST( sum(B.rows) as int) FROM sys.objects A  
-              INNER JOIN sys.partitions B ON A.object_id = B.object_id AND [B].index_id IN ( 0, 1 ) 
-              WHERE A.type = 'U'  AND A.Name = TABLE_NAME
-              GROUP BY A.schema_id, A.Name ) AS RowsCount  ,
-        (SELECT  count(OBJECT_NAME(parent_object_id)) AS [number_foreign_Key]  
-              FROM sys.foreign_keys as f
-              WHERE f.parent_object_id = OBJECT_ID('testbench_ee.' + TABLE_NAME) ) AS fkCount
-      FROM  INFORMATION_SCHEMA.COLUMNS as col
-      ORDER BY TABLE_NAME`;
+        const tables = await this.prisma.table.findMany();
+        const attributes = await this.prisma.attribute.findMany();
+        const byTable = new Map();
+        tables.forEach((t) => byTable.set(t.name, { fk: 0 }));
+        attributes.forEach((a) => {
+            const t = byTable.get(a.tableName);
+            if (t && a.fTable)
+                t.fk += 1;
+        });
+        const tableRows = await this.prisma2.$queryRaw `
+      SELECT TABLE_NAME,
+             (SELECT CAST(sum(B.rows) as int) 
+              FROM sys.objects A  
+              INNER JOIN sys.partitions B ON A.object_id = B.object_id AND B.index_id IN (0, 1) 
+              WHERE A.type = 'U' AND A.Name = TABLE_NAME
+              GROUP BY A.schema_id, A.Name) AS RowsCount
+      FROM INFORMATION_SCHEMA.COLUMNS
+      GROUP BY TABLE_NAME`;
         const all = [];
-        for (let i = 0; i < tables.length; i++) {
-            const table = await this.prisma.table.update({
-                where: {
-                    name: tables[i].TABLE_NAME,
-                },
+        for (const table of tables) {
+            const rowData = tableRows.find((r) => r.TABLE_NAME === table.name);
+            const fkData = byTable.get(table.name);
+            const updatedTable = await this.prisma.table.update({
+                where: { name: table.name },
                 data: {
-                    rowCount: tables[i].RowsCount,
-                    numForeignKey: tables[i].fkCount,
+                    rowCount: rowData ? rowData.RowsCount : table.rowCount,
+                    numForeignKey: fkData ? fkData.fk : table.numForeignKey,
                 },
             });
-            all.push(table);
+            all.push(updatedTable);
         }
         return all;
     }
