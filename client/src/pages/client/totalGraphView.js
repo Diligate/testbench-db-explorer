@@ -93,8 +93,7 @@ export default function TotalGraphView() {
         </Link>
       </div>
 
-      {/* Legend */}
-      <Legend />
+
 
       {/* Zoom controls */}
       <div className="absolute top-20 right-3 flex flex-col gap-2 z-10">
@@ -141,13 +140,3 @@ export default function TotalGraphView() {
   );
 }
 
-function Legend() {
-  return (
-    <div className="mb-4 text-sm text-slate-700 p-2">
-      <span className="inline-block w-3 h-3 bg-orange-500 mr-2 align-middle"></span>
-      Table Node
-      <span className="inline-block w-3 h-3 bg-blue-500 ml-4 mr-2 align-middle"></span>
-      Foreign Key
-    </div>
-  );
-}
