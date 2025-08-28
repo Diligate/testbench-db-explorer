@@ -1523,7 +1523,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/usera/Desktop/testbench-db-explorer/server/prisma/generated/client2",
+      "value": "/home/user5/Desktop/Imbus_Intern/server/prisma/generated/client2",
       "fromEnvVar": null
     },
     "config": {

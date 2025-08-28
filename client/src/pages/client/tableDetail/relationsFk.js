@@ -38,6 +38,6 @@ export default function RelationsFk(attributes, table) {
       return null;
     })
     .filter(Boolean);
-  console.log(attributes);
+
   return col;
 }

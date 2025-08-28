@@ -45,6 +45,7 @@ export default function RelationsPk(relationsP, attributes, table) {
         );
       }
       return null;
+
     })
     .filter(Boolean);
   return col;

@@ -21,16 +21,21 @@ export default function TotalGraphView() {
   }, [graph]);
 
   const filtered = useMemo(() => {
-    const nodes = graph.nodes.filter((n) => {
-      const byText = filter ? n.name.toLowerCase().includes(filter.toLowerCase()) : true;
-      const byGroup = activeGroup === "All" ? true : n.group === activeGroup;
-      return byText && byGroup;
-    });
-    const alive = new Set(nodes.map((n) => n.id));
-    const links = graph.links.filter((l) => alive.has(l.source) && alive.has(l.target));
-    return { nodes, links };
-  }, [graph, filter, activeGroup]);
+  const nodes = graph.nodes.filter((n) => {
+    const byText = filter ? n.name.toLowerCase().includes(filter.toLowerCase()) : true;
+    const byGroup = activeGroup === "All" ? true : n.group === activeGroup;
+    return byText && byGroup;
+  });
+  const alive = new Set(nodes.map((n) => n.id));
 
+  const links = graph.links.filter((l) => {
+    const sourceId = typeof l.source === "object" ? l.source.id : l.source;
+    const targetId = typeof l.target === "object" ? l.target.id : l.target;
+    return alive.has(sourceId) && alive.has(targetId);
+  });
+
+  return { nodes, links };
+}, [graph, filter, activeGroup]);
   return (
     <div className="flex flex-col w-screen h-screen">
       <div className="p-3 bg-white shadow flex gap-3 items-center">

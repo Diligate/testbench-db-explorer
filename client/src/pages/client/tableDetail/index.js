@@ -11,7 +11,7 @@ import InputRow from "./inputRow";
 import RelationsFk from "./relationsFk";
 import RelationsPk from "./relationsPk";
 import Result from "./result";
-import ForceGraph2D from "react-force-graph-2d";
+import TableGraph from "./TableGraph";
 
 export default function TableDetail() {
   let navigate = useNavigate();
@@ -22,6 +22,7 @@ export default function TableDetail() {
   const [inputs, setInputs] = useState({});
   const [rowsDB, setRowsDB] = useState({});
   const [showDetail, setShowDetail] = useState(true);
+  const [showGraph, setShowGraph] = useState(true);
   const [relationsP, setRelationsP] = useState([]);
   const [localGraph, setLocalGraph] = useState({ nodes: [], links: [] });
 
@@ -32,7 +33,10 @@ export default function TableDetail() {
         setTable(data);
         fetch("http://localhost:5500/attributes/table/" + data.id)
           .then((res) => res.json())
-          .then((data) => setAttributes(data));
+          .then((data) => {
+            console.log("Attributes:", data);
+            setAttributes(data);
+          });
         fetch("http://localhost:5500/attributes/name/" + data.name)
           .then((res) => res.json())
           .then((data) => {
@@ -59,6 +63,80 @@ export default function TableDetail() {
         navigate("/404");
       });
   }, [name]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (showGraph) {
+    return (
+      <div className="h-screen w-screen flex flex-col">
+        {/* Header / Logo */}
+        <div
+          className="px-8 py-2 text-left mb-5 h-36 bg-gradient-to-r bg-cover bg-left-top from-teal-400 to-orange-300 w-full relative"
+          style={{ backgroundImage: `url(${background})` }}
+        >
+          <span className="absolute top-0 left-0 m-0 p-0 bg-gray-700 opacity-20 w-full h-36"></span>
+          <Link
+            to="/home"
+            className="flex flex-col mt-4 items-center justify-center relative z-20"
+          >
+            <img src={logo} alt="logo" className="h-12 z-20" />
+            <h2 className="block text-2xl font-medium text-white cursor-default tracking-wider z-20">
+              TestBench-VS
+            </h2>
+          </Link>
+        </div>
+
+        {/* Table Info */}
+        <div className="flex flex-col justify-center items-center">
+          <div className="max-w-2xl mx-auto sm:max-w-xl md:max-w-2xl mt-6 text-center">
+            <p className="inline-block px-3 py-2 mb-4 text-xs font-semibold tracking-wider text-white uppercase rounded-full bg-orange-500">
+              {table.rowCount} Row
+            </p>
+            <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-gray-900 sm:text-4xl md:mx-auto flex justify-start">
+              <span className="relative inline-block">
+                <svg
+                  viewBox="0 0 52 24"
+                  fill="currentColor"
+                  className="absolute top-0 left-0 hidden w-32 -mt-8 -ml-20 text-blue-gray-100 lg:w-32 lg:-ml-28 lg:-mt-10 sm:block fill-[#3e9688]"
+                >
+                  <defs>
+                    <pattern
+                      id="b039bae0-fdd5-4311-b198-8557b064fce0"
+                      x="0"
+                      y="0"
+                      width=".135"
+                      height=".30"
+                    >
+                      <circle cx="1" cy="1" r=".7" />
+                    </pattern>
+                  </defs>
+                  <rect
+                    fill="url(#b039bae0-fdd5-4311-b198-8557b064fce0)"
+                    width="52"
+                    height="24"
+                  />
+                </svg>
+              </span>
+              <span className="z-20 text-left bg-white"> {table.name}</span>
+            </h2>
+            <p className="text-base text-gray-700 md:text-lg">
+              {table.description ? table.description : "no description yet"}
+            </p>
+          </div>
+        </div>
+
+        {/* Graph */}
+        <div className="flex-1 w-fullflex justify-center items-center p-4">
+          <TableGraph
+            graph={localGraph}
+            tableName={name}
+            attributes={attributes}
+            relations={relationsP}
+            table={table}
+            show={showGraph}
+            setShow={setShowGraph}
+          />
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = (event) => {
     setRowsDB({});
@@ -108,6 +186,7 @@ export default function TableDetail() {
   };
   const columns = Columns(attributes);
   const columnsFk = ColumnsFk(attributes);
+console.log("ColumnsFk output:", columnsFk);
   const relationsPk = RelationsPk(relationsP, attributes, table);
   const relationsFk = RelationsFk(attributes, table);
   const inputRow = InputRow(attributes, setInputs);
@@ -176,54 +255,21 @@ export default function TableDetail() {
             </div>
           </div>
         </div>
-
-        <div className="flex justify-center mx-auto mb-10 ">
-          <span className="inline-block w-40 h-1 bg-orange-400 rounded-full"></span>
-          <span className="inline-block w-3 h-1 mx-1 bg-orange-400 rounded-full"></span>
-          <span className="inline-block w-1 h-1 bg-orange-400 rounded-full"></span>
-        </div>
-        <div className="w-full h-80 px-4 lg:px-20 mb-4">
-          <div className="bg-white rounded shadow p-2 h-full">
-            <div className="text-sm font-semibold mb-1">Relationships around this table</div>
-            <ForceGraph2D
-              graphData={localGraph}
-              nodeId="id"
-              height={300}
-              nodeLabel={(n) => `${n.name}\nPKs: ${n.pkColumns?.join(", ") || "(none)"}`}
-              linkDirectionalArrowLength={6}
-              linkDirectionalArrowRelPos={1}
-              linkLabel={(l) => `${l.fkColumn} -> ${l.target}${l.pkColumn ? ` (PK: ${l.pkColumn})` : ""}`}
-              nodeAutoColorBy="group"
-              onNodeClick={(node) => navigate(`/table/${node.name}`)}
-              nodeCanvasObject={(node, ctx, globalScale) => {
-                const label = node.name;
-                const fontSize = 12 / Math.max(0.5, globalScale);
-                ctx.font = `${fontSize}px Sans-Serif`;
-                const textWidth = ctx.measureText(label).width;
-                const bckgDimensions = [textWidth + 8, fontSize + 4];
-                ctx.fillStyle = node.color || "#fff";
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 4, 0, 2 * Math.PI, false);
-                ctx.fill();
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = "#333";
-                ctx.stroke();
-                ctx.fillStyle = "rgba(255,255,255,0.9)";
-                ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - 12 - bckgDimensions[1] / 2, ...bckgDimensions);
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillStyle = "#111";
-                ctx.fillText(label, node.x, node.y - 12);
-                node.__bckgDimensions = bckgDimensions;
-              }}
-              nodePointerAreaPaint={(node, color, ctx) => {
-                const bckgDimensions = node.__bckgDimensions || [0, 0];
-                ctx.fillStyle = color;
-                ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - 12 - bckgDimensions[1] / 2, ...bckgDimensions);
-              }}
+        <div className="flex justify-center items-center mx-auto mb-5 ">
+          <h3 className="px-6 text-xl italic">Graph view</h3>
+          <label htmlFor="ShowGraph" className="relative w-16 h-8 cursor-pointer">
+            <input
+              type="checkbox"
+              id="ShowGraph"
+              className="sr-only peer"
+              onChange={() => setShowGraph(prev => !prev)}
+              checked={showGraph}
             />
-          </div>
+            <span className="absolute inset-0 bg-orange-400 rounded-full transition peer-checked:bg-[#3e9688]" />
+            <span className="absolute inset-0 w-6 h-6 m-1 bg-white rounded-full transition peer-checked:translate-x-8" />
+          </label>
         </div>
+
         <div className="flex justify-center items-center mx-auto mb-5 ">
           <h3 className="px-6 text-xl  italic">Meta data</h3>
           <label
@@ -256,14 +302,18 @@ export default function TableDetail() {
                   {columns}
                 </div>
               </div>
-              <div className=" w-full m-0 p-5 bg-white rounded-lg text-neutral-900 ">
-                <h2 className="mb-4 w-max text-lg border-b-2 border-[#3e9688] border-dashed ">
+              <div className="w-full m-0 p-5 bg-white rounded-lg text-neutral-900">
+                <h2 className="mb-4 w-max text-lg border-b-2 border-[#3e9688] border-dashed">
                   Foreign Keys
                 </h2>
                 <div className="flex flex-col justify-start items-start gap-2 w-full">
-                  {columnsFk.length > 0
-                    ? columnsFk
-                    : "This table don't have any foreign key."}
+                  {columnsFk.length > 0 ? (
+                    columnsFk
+                  ) : (
+                    <p className="text-gray-500 italic">
+                      No foreign keys defined for this table.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -311,6 +361,6 @@ export default function TableDetail() {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 }
